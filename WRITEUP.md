@@ -10,7 +10,7 @@ I built [SilentWrong](https://github.com/lakshdadhaniya2007/silentwrong) to meas
 
 Two deterministic, realistically messy SQLite schemas: an e-commerce database (soft-deletes, voided orders, partial refunds, an orders↔line-items fan-out trap, order-vs-ship dates) and a SaaS billing database (amounts in cents, trial subscriptions, multi-sub accounts, churn dates, invoiced-vs-collected cash). Twelve business questions with precise semantic contracts and known-correct answers. Twenty-three materially wrong answers reproducing ten documented failure modes — errors spanning 0.5% to 9,900%, including two cases where the *ranking* flips (wrong region crowned #1) while every number involved looks plausible.
 
-A naive-but-plausible baseline modeled on documented failure patterns gets 8 of 12 questions silently wrong — no errors, no warnings, eight wrong numbers. The harness ships ready to run live frontier models (one command, any Anthropic or OpenAI model); those results are the next release.
+Then I ran a live frontier model against it. Gemini Flash was **silently wrong on 2 of the 11 questions it answered — 18%**, with no error and no warning. Asked for cash collected in Q2, it queried the invoices table instead of payments and overstated by **45.6%**; asked for ARPA, it returned a figure **1.2%** off — small enough that no reviewer would ever question it. The verifier flagged both and false-alarmed on none of the 9 correct answers. (Two wrong answers is a small sample, and in this run the control totals alone caught both, so it doesn't yet reproduce the dual-formulation advantage the mutation study showed.)
 
 ## The verifier
 
