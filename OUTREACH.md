@@ -12,7 +12,7 @@ Hi [NAME],
 
 AI over real databases fails in a specific way: plausible number, no error, wrong meaning — wrong date column, forgotten soft-deletes, double-counted joins. On realistic-schema benchmarks, frontier models are silently wrong [LIVE X]% of the time.
 
-I built an open-source benchmark that reproduces these failures and a verification layer that — without ever seeing the correct answer — flagged 23/23 wrong answers with zero false alarms: https://github.com/lslsls6969/silentwrong
+I built an open-source benchmark that reproduces these failures and a verification layer that — without ever seeing the correct answer — flagged 23/23 wrong answers with zero false alarms: https://github.com/lakshdadhaniya2007/silentwrong
 
 I'm looking for 3–5 design partners to measure this on real workloads (anonymized schemas + query logs, read-only, NDA fine). You get: your actual silent-wrong rate, which failure modes bite you, and first access to the verification layer. I get: real-world validation.
 
