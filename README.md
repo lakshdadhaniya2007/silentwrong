@@ -29,7 +29,10 @@ Run your own (results append to `MODEL_RESULTS.md`):
 ```bash
 ANTHROPIC_API_KEY=... python3 model_runner.py --provider anthropic --model claude-sonnet-4-5
 OPENAI_API_KEY=...    python3 model_runner.py --provider openai --model gpt-4.1
+GOOGLE_API_KEY=...    python3 model_runner.py --provider google   # FREE tier (aistudio.google.com, no card)
 ```
+
+No budget? Google AI Studio and Groq both offer free API tiers with no card required. `--provider google` uses Gemini directly; setting `OPENAI_BASE_URL` points the openai provider at any OpenAI-compatible endpoint (Groq, OpenRouter, local Ollama).
 
 ## How it works
 
