@@ -105,8 +105,12 @@ def extract_sql(text):
 def _post(url, payload, headers):
     req = urllib.request.Request(url, data=json.dumps(payload).encode(),
                                  headers={"Content-Type": "application/json", **headers})
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return json.loads(r.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")[:400]
+        raise RuntimeError(f"HTTP {e.code} {e.reason} -- {body}") from None
 
 def call_anthropic(model, prompt):
     key = os.environ.get("ANTHROPIC_API_KEY") or sys.exit("Set ANTHROPIC_API_KEY")
@@ -125,8 +129,8 @@ def call_openai(model, prompt):
             out = _post(f"{api}/chat/completions", payload,
                         {"Authorization": f"Bearer {key}"})
             return out["choices"][0]["message"]["content"]
-        except urllib.error.HTTPError as e:
-            if e.code != 400:
+        except RuntimeError as e:
+            if "HTTP 400" not in str(e):
                 raise
     raise RuntimeError("OpenAI request rejected")
 
@@ -183,6 +187,14 @@ def call_google(model, prompt):
                 {"contents": [{"parts": [{"text": prompt}]}]}, {})
     return out["candidates"][0]["content"]["parts"][0]["text"]
 
+def list_google_models():
+    key = os.environ.get("GOOGLE_API_KEY") or sys.exit("Set GOOGLE_API_KEY")
+    with urllib.request.urlopen(
+            f"https://generativelanguage.googleapis.com/v1beta/models?key={key}", timeout=60) as r:
+        data = json.loads(r.read().decode())
+    return [m["name"].split("/")[-1] for m in data.get("models", [])
+            if "generateContent" in m.get("supportedGenerationMethods", [])]
+
 PROVIDERS = {"anthropic": call_anthropic, "openai": call_openai, "google": call_google}
 
 # ----------------------------------------------------------------------
@@ -190,9 +202,10 @@ PROVIDERS = {"anthropic": call_anthropic, "openai": call_openai, "google": call_
 # ----------------------------------------------------------------------
 def run(provider, model, qids=None):
     results = []
-    for question in bh.Q:
-        if qids and question["qid"] not in qids:
-            continue
+    todo = [q for q in bh.Q if not qids or q["qid"] in qids]
+    for i, question in enumerate(todo, 1):
+        if provider != "mock":
+            print(f"  [{i}/{len(todo)}] {question['qid']} ...", file=sys.stderr, flush=True)
         con = bh.ec if question["schema"] == "ecom" else bh.sa
         correct = question["correct"]()
         qid = question["qid"]
@@ -318,7 +331,11 @@ def main():
     ap.add_argument("--provider", choices=["mock", "anthropic", "openai", "google"], default="mock")
     ap.add_argument("--model", default=None)
     ap.add_argument("--questions", default=None, help="comma-separated qids, e.g. E1,S5")
+    ap.add_argument("--list-models", action="store_true",
+                    help="list google models your key can use, then exit")
     a = ap.parse_args()
+    if a.list_models:
+        print("\n".join(list_google_models())); return
     model = a.model or {"mock": "mock-naive-v1", "anthropic": "claude-sonnet-4-5",
                         "openai": "gpt-4.1", "google": "gemini-2.5-flash"}[a.provider]
     qids = set(a.questions.split(",")) if a.questions else None
