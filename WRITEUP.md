@@ -4,7 +4,7 @@ Ask an AI "what was our revenue last quarter?" and it will give you a clean, pla
 
 This isn't an anecdote. On Spider 2.0, a benchmark built from real enterprise databases, frontier systems solve roughly a fifth of tasks — down from ~91% on the toy benchmarks that preceded it. Yet "chat with your data" is being deployed everywhere right now. The gap between those two facts is the most dangerous failure mode in applied AI today, and almost everyone is working on the wrong side of it: making generation *better* rather than making answers *checkable*.
 
-I built [SilentWrong](https://github.com/lslsls6969/silentwrong) to measure the checkable side.
+I built [SilentWrong](https://github.com/lakshdadhaniya2007/silentwrong) to measure the checkable side.
 
 ## The benchmark
 
@@ -28,4 +28,4 @@ The ablation is the finding that matters. Strip out contract-driven reformulatio
 
 Every enterprise deploying AI over its data is one silent error away from a wrong number in a filing. The fix isn't a better model — it's a verification layer that turns "plausible" into "checkable": a verified answer with a confidence score, or an honest "I can't verify this, here's why."
 
-The benchmark is open source: [https://github.com/lslsls6969/silentwrong]. If your team runs natural-language analytics and you want to know your real silent-wrong rate — I'm looking for 3–5 design partners to run this against production workloads (anonymized). Reach me: lakshdadhaniya2007@gmail.com.
+The benchmark is open source: [https://github.com/lakshdadhaniya2007/silentwrong]. If your team runs natural-language analytics and you want to know your real silent-wrong rate — I'm looking for 3–5 design partners to run this against production workloads (anonymized). Reach me: lakshdadhaniya2007@gmail.com.
