@@ -1,0 +1,76 @@
+{
+ "n_wrong": 23,
+ "full": 23,
+ "abl": 14,
+ "fp_full": 0,
+ "fp_abl": 0,
+ "n_correct": 12,
+ "by_mode": {
+  "softdelete_leak": {
+   "n": 5,
+   "mean_err": 27.894915310456664,
+   "full": 5,
+   "abl": 2
+  },
+  "boundary_date": {
+   "n": 1,
+   "mean_err": 0.7808277906927288,
+   "full": 1,
+   "abl": 1
+  },
+  "join_fanout": {
+   "n": 3,
+   "mean_err": 71.28121254522071,
+   "full": 3,
+   "abl": 2
+  },
+  "count_not_distinct": {
+   "n": 2,
+   "mean_err": 102.77351014797445,
+   "full": 2,
+   "abl": 2
+  },
+  "status_leak": {
+   "n": 2,
+   "mean_err": 3.6128572589996626,
+   "full": 2,
+   "abl": 0
+  },
+  "wrong_grain_avg": {
+   "n": 2,
+   "mean_err": 44.56020323246466,
+   "full": 2,
+   "abl": 1
+  },
+  "wrong_date_col": {
+   "n": 3,
+   "mean_err": 149.40722614364867,
+   "full": 3,
+   "abl": 1
+  },
+  "unit_cents": {
+   "n": 2,
+   "mean_err": 9900.0,
+   "full": 2,
+   "abl": 2
+  },
+  "trial_leak": {
+   "n": 2,
+   "mean_err": 6.254712201887084,
+   "full": 2,
+   "abl": 2
+  },
+  "wrong_table": {
+   "n": 1,
+   "mean_err": 20.80098123835915,
+   "full": 1,
+   "abl": 1
+  }
+ },
+ "immaterial": [
+  [
+   "S3",
+   "boundary_date"
+  ]
+ ]
+}
