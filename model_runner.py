@@ -15,6 +15,9 @@ Usage
   python3 model_runner.py --provider mock                       # keyless pipeline test
   ANTHROPIC_API_KEY=... python3 model_runner.py --provider anthropic --model claude-sonnet-4-5
   OPENAI_API_KEY=...    python3 model_runner.py --provider openai --model gpt-5.2
+  GOOGLE_API_KEY=...    python3 model_runner.py --provider google --model gemini-2.5-flash   # free tier
+  OPENAI_BASE_URL=https://api.groq.com/openai/v1 OPENAI_API_KEY=... \
+                        python3 model_runner.py --provider openai --model llama-3.3-70b-versatile   # Groq free tier
   Add --questions E1,S5 to run a subset.
 
 Results accumulate in model_runs.json; MODEL_RESULTS.md is regenerated each run.
@@ -115,10 +118,11 @@ def call_anthropic(model, prompt):
 
 def call_openai(model, prompt):
     key = os.environ.get("OPENAI_API_KEY") or sys.exit("Set OPENAI_API_KEY")
+    api = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
     base = {"model": model, "messages": [{"role": "user", "content": prompt}]}
     for payload in ({**base, "temperature": 0, "max_completion_tokens": 1500}, base):
         try:
-            out = _post("https://api.openai.com/v1/chat/completions", payload,
+            out = _post(f"{api}/chat/completions", payload,
                         {"Authorization": f"Bearer {key}"})
             return out["choices"][0]["message"]["content"]
         except urllib.error.HTTPError as e:
@@ -173,7 +177,13 @@ _MOCK_SQL = {
                AND (s.end_date IS NULL OR s.end_date>'2026-07-31')
              GROUP BY a.segment ORDER BY SUM(s.mrr_cents) DESC LIMIT 1""",         # correct
 }
-PROVIDERS = {"anthropic": call_anthropic, "openai": call_openai}
+def call_google(model, prompt):
+    key = os.environ.get("GOOGLE_API_KEY") or sys.exit("Set GOOGLE_API_KEY (free key: aistudio.google.com)")
+    out = _post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+                {"contents": [{"parts": [{"text": prompt}]}]}, {})
+    return out["candidates"][0]["content"]["parts"][0]["text"]
+
+PROVIDERS = {"anthropic": call_anthropic, "openai": call_openai, "google": call_google}
 
 # ----------------------------------------------------------------------
 # Run
@@ -305,12 +315,12 @@ def regenerate_md(runs):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--provider", choices=["mock", "anthropic", "openai"], default="mock")
+    ap.add_argument("--provider", choices=["mock", "anthropic", "openai", "google"], default="mock")
     ap.add_argument("--model", default=None)
     ap.add_argument("--questions", default=None, help="comma-separated qids, e.g. E1,S5")
     a = ap.parse_args()
     model = a.model or {"mock": "mock-naive-v1", "anthropic": "claude-sonnet-4-5",
-                        "openai": "gpt-4.1"}[a.provider]
+                        "openai": "gpt-4.1", "google": "gemini-2.5-flash"}[a.provider]
     qids = set(a.questions.split(",")) if a.questions else None
 
     results = run(a.provider, model, qids)
