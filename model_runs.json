@@ -1,0 +1,139 @@
+{
+ "mock-naive-v1": {
+  "when": "2026-08-09 16:48",
+  "summary": {
+   "model": "mock-naive-v1",
+   "n": 12,
+   "loud": 0,
+   "answered": 12,
+   "silent_wrong": 8,
+   "silent_rate": 66.66666666666666,
+   "caught": 8,
+   "caught_abl": 4,
+   "fp": 0,
+   "n_right": 4
+  },
+  "results": [
+   {
+    "qid": "E1",
+    "cls": "silent_wrong",
+    "value": 2548243.98,
+    "correct": 2475038.7,
+    "err_pct": 2.957742842566453,
+    "full": "FLAG",
+    "abl": "FLAG",
+    "sql": "SELECT ROUND(SUM(oi.quantity*oi.unit_price),2) FROM orders o\n             JOIN order_items oi ON oi.order_id=o.id\n             WHERE o.status='completed'\n               AND o.order_date>='2026-01-01' AND o.order_date<'2026-04-01'"
+   },
+   {
+    "qid": "E2",
+    "cls": "silent_wrong",
+    "value": 159.0,
+    "correct": 149,
+    "err_pct": 6.7114093959731544,
+    "full": "FLAG",
+    "abl": "TRUST",
+    "sql": "SELECT COUNT(DISTINCT o.customer_id) FROM orders o\n             WHERE o.is_deleted=0 AND o.status<>'cancelled'\n               AND o.order_date>='2026-07-01' AND o.order_date<'2026-08-01'"
+   },
+   {
+    "qid": "E3",
+    "cls": "correct",
+    "value": 3091.55,
+    "correct": 3091.55,
+    "err_pct": 0.0,
+    "full": "TRUST",
+    "abl": "TRUST",
+    "sql": "SELECT ROUND(SUM(oi.quantity*oi.unit_price)/COUNT(DISTINCT o.id),2)\n             FROM orders o JOIN order_items oi ON oi.order_id=o.id\n             WHERE o.status='completed' AND o.is_deleted=0\n               AND o.order_date>='2026-07-01' AND o.order_date<'2026-08-01'"
+   },
+   {
+    "qid": "E4",
+    "cls": "silent_wrong",
+    "value": "LATAM",
+    "correct": "EMEA",
+    "err_pct": "FLIP",
+    "full": "FLAG",
+    "abl": "TRUST",
+    "sql": "SELECT c.region FROM orders o JOIN customers c ON c.id=o.customer_id\n             JOIN order_items oi ON oi.order_id=o.id\n             WHERE o.status='completed' AND o.is_deleted=0\n               AND o.order_date>='2026-01-01' AND o.order_date<'2026-04-01'\n             GROUP BY c.region ORDER BY SUM(oi.quantity*oi.unit_price) DESC LIMIT 1"
+   },
+   {
+    "qid": "E5",
+    "cls": "correct",
+    "value": 2394539.25,
+    "correct": 2394539.25,
+    "err_pct": 0.0,
+    "full": "TRUST",
+    "abl": "TRUST",
+    "sql": "SELECT ROUND((SELECT SUM(oi.quantity*oi.unit_price) FROM orders o\n             JOIN order_items oi ON oi.order_id=o.id\n             WHERE o.status='completed' AND o.is_deleted=0\n               AND o.order_date>='2026-01-01' AND o.order_date<'2026-04-01')\n             - (SELECT COALESCE(SUM(amount),0) FROM refunds\n             WHERE refund_date>='2026-01-01' AND refund_date<'2026-04-01'),2)"
+   },
+   {
+    "qid": "E6",
+    "cls": "silent_wrong",
+    "value": 226.0,
+    "correct": 247,
+    "err_pct": 8.502024291497975,
+    "full": "FLAG",
+    "abl": "TRUST",
+    "sql": "SELECT COUNT(*) FROM orders o\n             WHERE o.status='completed' AND o.is_deleted=0\n               AND o.order_date>='2026-03-01' AND o.order_date<'2026-04-01'"
+   },
+   {
+    "qid": "S1",
+    "cls": "correct",
+    "value": 137748.0,
+    "correct": 137748.0,
+    "err_pct": 0.0,
+    "full": "TRUST",
+    "abl": "TRUST",
+    "sql": "SELECT ROUND(SUM(s.mrr_cents)/100.0,2) FROM subscriptions s\n             JOIN accounts a ON a.id=s.account_id\n             WHERE s.is_trial=0 AND a.is_deleted=0 AND s.start_date<='2026-07-31'\n               AND (s.end_date IS NULL OR s.end_date>'2026-07-31')"
+   },
+   {
+    "qid": "S2",
+    "cls": "silent_wrong",
+    "value": 333.0,
+    "correct": 249,
+    "err_pct": 33.734939759036145,
+    "full": "FLAG",
+    "abl": "FLAG",
+    "sql": "SELECT COUNT(a.id) FROM subscriptions s JOIN accounts a ON a.id=s.account_id\n             WHERE s.is_trial=0 AND a.is_deleted=0 AND s.start_date<='2026-07-31'\n               AND (s.end_date IS NULL OR s.end_date>='2026-07-01')"
+   },
+   {
+    "qid": "S3",
+    "cls": "silent_wrong",
+    "value": 97.0,
+    "correct": 18,
+    "err_pct": 438.8888888888889,
+    "full": "FLAG",
+    "abl": "TRUST",
+    "sql": "SELECT COUNT(*) FROM subscriptions s\n             WHERE s.is_trial=0 AND s.start_date>='2026-04-01' AND s.start_date<'2026-07-01'"
+   },
+   {
+    "qid": "S4",
+    "cls": "silent_wrong",
+    "value": 427.79,
+    "correct": 553.2,
+    "err_pct": 22.669920462762114,
+    "full": "FLAG",
+    "abl": "FLAG",
+    "sql": "SELECT ROUND(AVG(s.mrr_cents/100.0),2) FROM subscriptions s\n             JOIN accounts a ON a.id=s.account_id\n             WHERE s.is_trial=0 AND a.is_deleted=0 AND s.start_date<='2026-07-31'\n               AND (s.end_date IS NULL OR s.end_date>'2026-07-31')"
+   },
+   {
+    "qid": "S5",
+    "cls": "silent_wrong",
+    "value": 664798.0,
+    "correct": 550325.0,
+    "err_pct": 20.80098123835915,
+    "full": "FLAG",
+    "abl": "FLAG",
+    "sql": "SELECT ROUND(SUM(i.amount_cents)/100.0,2) FROM invoices i\n             WHERE i.invoice_date>='2026-04-01' AND i.invoice_date<'2026-07-01'"
+   },
+   {
+    "qid": "S6",
+    "cls": "correct",
+    "value": "ENT",
+    "correct": "ENT",
+    "err_pct": null,
+    "full": "TRUST",
+    "abl": "TRUST",
+    "sql": "SELECT a.segment FROM subscriptions s JOIN accounts a ON a.id=s.account_id\n             WHERE s.is_trial=0 AND a.is_deleted=0 AND s.start_date<='2026-07-31'\n               AND (s.end_date IS NULL OR s.end_date>'2026-07-31')\n             GROUP BY a.segment ORDER BY SUM(s.mrr_cents) DESC LIMIT 1"
+   }
+  ]
+ }
+}
