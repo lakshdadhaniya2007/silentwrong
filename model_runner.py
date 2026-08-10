@@ -95,6 +95,7 @@ def extract_sql(text):
                  sql, re.I):
         return None
     return sql
+
 # ----------------------------------------------------------------------
 # Providers
 # ----------------------------------------------------------------------
@@ -239,6 +240,7 @@ def run(provider, model, qids=None):
                             err_pct=(err if isinstance(err, float) else err),
                             full=fv, abl=av, sql=sql))
     return results
+
 # ----------------------------------------------------------------------
 # Score + report
 # ----------------------------------------------------------------------
