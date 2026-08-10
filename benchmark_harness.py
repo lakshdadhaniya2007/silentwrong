@@ -98,6 +98,7 @@ ec.executemany("INSERT INTO orders VALUES(?,?,?,?,?,?)", orders)
 ec.executemany("INSERT INTO order_items VALUES(?,?,?,?)", items)
 ec.executemany("INSERT INTO refunds VALUES(?,?,?,?)", refunds)
 ec.commit()
+
 # ---- governed anchors (maintained in Python at write time, independent of SQL) ----
 def quarter(d): return (d.year, (d.month - 1) // 3 + 1)
 ec_ledger = collections.defaultdict(float)
@@ -209,6 +210,7 @@ Q = []
 def q(schema, qid, text, correct, muts, dual, anchors, invariants, kind="num"):
     Q.append(dict(schema=schema, qid=qid, text=text, correct=correct, muts=muts,
                   dual=dual, anchors=anchors, invariants=invariants, kind=kind))
+
 # ---------------- E-COMMERCE ----------------
 EC_REV_Q1 = """SELECT ROUND(SUM(oi.quantity*oi.unit_price),2)
  FROM orders o JOIN order_items oi ON oi.order_id=o.id
@@ -346,6 +348,7 @@ q("ecom", "E6", "Completed, non-voided orders SHIPPED in March 2026",
         AND o.ship_date>='2026-03-01' AND o.ship_date<'2026-04-01' GROUP BY o.ship_date)"""),
   anchors=[("orders_bound", lambda v: v <= ec_ledger["total_orders"])],
   invariants=[("nonneg", lambda v: v >= 0)])
+
 # ---------------- SAAS ----------------
 SA_MRR = """SELECT ROUND(SUM(s.mrr_cents)/100.0,2)
  FROM subscriptions s JOIN accounts a ON a.id=s.account_id
@@ -445,6 +448,7 @@ q("saas", "S6", "Top segment by MRR, July 31 2026 (non-deleted accounts)",
       WHERE s.is_trial=0 AND a.is_deleted=0 AND a.segment='{sg}'
         AND s.start_date<='2026-07-31' AND (s.end_date IS NULL OR s.end_date>'2026-07-31')""")),
   anchors=[], invariants=[("valid_segment", lambda v: v in SEGS)], kind="cat")
+
 # =====================================================================
 # RUN + VERIFY
 # =====================================================================
