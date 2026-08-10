@@ -21,8 +21,12 @@ Silent-wrong = query executed and returned a materially wrong answer (>0.1% or c
 
 | Model | Questions | Loud errors | Silent wrong | Verifier caught | False alarms |
 |---|---|---|---|---|---|
+| **gemini-flash-latest** | 12 | 1 | **2 (18% of answered)** | 2/2 | 0/9 |
 | mock-naive-v1 (pipeline test) | 12 | 0 | 8 (67%) | 8/8 | 0/4 |
-| *your model here* | | | | | |
+
+A live frontier model was silently wrong on roughly **1 in 5** answered questions. Both failures are the dangerous kind: asked for *cash collected* in Q2 it queried the invoices table instead of payments (**45.6% overstatement** — the billed-vs-collected trap), and ARPA came back **1.2%** off, small enough that no reviewer would ever question it. Neither produced an error or warning. The verifier flagged both and did not false-alarm on any of the 9 correct answers.
+
+Caveat on sample size: n=2 wrong answers is far too small to claim a detection rate. In this run the governed anchors alone caught both, so it does *not* independently reproduce the dual-formulation advantage seen in the v0.2 mutation study — that needs more questions and more models.
 
 Run your own (results append to `MODEL_RESULTS.md`):
 
